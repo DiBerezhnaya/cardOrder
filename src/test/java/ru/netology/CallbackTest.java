@@ -37,7 +37,7 @@ class CallbackTest {
     }
 
     @Test
-    void shouldSendForm() {
+    void happyPath() {
         driver.get("http://localhost:9999/");
         driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Черных Мария");
         driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79995677666");
@@ -47,5 +47,4 @@ class CallbackTest {
         String expected = "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.";
         assertEquals(expected, actualText);
     }
-
 }
