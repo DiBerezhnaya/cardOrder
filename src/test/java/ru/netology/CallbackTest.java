@@ -11,8 +11,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CallbackTest {
@@ -31,6 +29,7 @@ class CallbackTest {
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");
         driver = new ChromeDriver(options);
+        driver.get("http://localhost:9999/");
     }
 
     @AfterEach
@@ -41,58 +40,70 @@ class CallbackTest {
 
     @Test
     void happyPath() {
-        driver.get("http://localhost:9999/");
         driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Черных Мария");
-        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79995677666");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79995577666");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("button")).click();
-        String actualText = driver.findElement(By.cssSelector(".paragraph")).getText().trim();
+        String actualText = driver.findElement(By.cssSelector("[data-test-id='order-success']")).getText().trim();
         String expected = "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.";
         assertEquals(expected, actualText);
     }
 
     @Test
-    void validationNameTest() {
-        driver.get("http://localhost:9999/");
-        driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Kristina");
+    void emptyFieldsTest() {
+        driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys(" ");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys(" ");
+        driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("button")).click();
-        String actualText = driver.findElement(By.cssSelector(".input__sub")).getText().trim();
+        String actualText = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub")).getText().trim();
+        String expected = "Поле обязательно для заполнения";
+        assertEquals(expected, actualText);
+    }
+
+    @Test
+    void validationNameTest() {
+        driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Kristina");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79995577666");
+        driver.findElement(By.cssSelector(".checkbox__box")).click();
+        driver.findElement(By.cssSelector("button")).click();
+        String actualText = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub")).getText().trim();
         String expected = "Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.";
         assertEquals(expected, actualText);
     }
 
     @Test
-    void validationNameV2() {
-        driver.get("http://localhost:9999/");
-        driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Мария");
-        driver.findElement(By.cssSelector("button")).click();
-        String actualText = driver.findElement(By.cssSelector(".input__sub")).getText().trim();
-        String expected = "Укажите точно как в паспорте";
-        assertEquals(expected, actualText);
-    }
-
-    @Test
-    void validationTelefonTest() {
-        driver.get("http://localhost:9999/");
-        driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Мария Парм");
-        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79995677666");
+    void validationTelephoneTest() {
+        driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Черных Мария");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+799955776669");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("button")).click();
-        String actualText = driver.findElement(By.cssSelector(".input__sub")).getText().trim();
+        String actualText = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub")).getText().trim();
         String expected = "Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.";
         assertEquals(expected, actualText);
     }
 
     @Test
-    void validationTest() {
-        driver.get("http://localhost:9999/");
-        List<WebElement> textFields = driver.findElements(By.className("input_invalid"));
-        textFields.get(0).sendKeys("Мари Апри");
-        textFields.get(1).sendKeys("+799956776686");
-        driver.findElement(By.className(".checkbox__box")).click();
+    void validationCheckboxTest() {
+        driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Черных Мария");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79995577666");
+        WebElement checkBoxSelected = driver.findElement(By.cssSelector(".checkbox__box"));
+        boolean isSelected = checkBoxSelected.isSelected();
+        if (!isSelected) {
+            checkBoxSelected.click();
+        }
+        WebElement checkBoxDisplayed = driver.findElement(By.cssSelector(".checkbox__box"));
+        boolean isDisplayed = checkBoxDisplayed.isDisplayed();
+        if (isDisplayed) {
+            checkBoxDisplayed.click();
+        }
+        WebElement checkBoxEnabled = driver.findElement(By.cssSelector(".checkbox__box"));
+        boolean isEnabled = checkBoxEnabled.isEnabled();
+        if (isEnabled) {
+            checkBoxEnabled.click();
+        }
         driver.findElement(By.tagName("button")).click();
-        String actualText = driver.findElement(By.className("input__sub")).getText().trim();
-        String expected = "Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.";
+        String actualText = driver.findElement(By.cssSelector("[data-test-id='order-success']")).getText().trim();
+        String expected = "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.";
         assertEquals(expected, actualText);
     }
 }
