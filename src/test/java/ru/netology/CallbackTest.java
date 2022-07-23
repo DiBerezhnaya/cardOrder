@@ -86,24 +86,10 @@ class CallbackTest {
     void validationCheckboxTest() {
         driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Черных Мария");
         driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79995577666");
-        WebElement checkBoxSelected = driver.findElement(By.cssSelector(".checkbox__box"));
-        boolean isSelected = checkBoxSelected.isSelected();
-        if (!isSelected) {
-            checkBoxSelected.click();
-        }
-        WebElement checkBoxDisplayed = driver.findElement(By.cssSelector(".checkbox__box"));
-        boolean isDisplayed = checkBoxDisplayed.isDisplayed();
-        if (isDisplayed) {
-            checkBoxDisplayed.click();
-        }
-        WebElement checkBoxEnabled = driver.findElement(By.cssSelector(".checkbox__box"));
-        boolean isEnabled = checkBoxEnabled.isEnabled();
-        if (isEnabled) {
-            checkBoxEnabled.click();
-        }
+        driver.findElement(By.cssSelector(".checkbox__box"));
         driver.findElement(By.tagName("button")).click();
-        String actualText = driver.findElement(By.cssSelector("[data-test-id='order-success']")).getText().trim();
-        String expected = "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.";
+        String actualText = driver.findElement(By.cssSelector("[data-test-id='agreement'].input_invalid")).getText().trim();
+        String expected = "Я соглашаюсь с условиями обработки и использования моих персональных данных и разрешаю сделать запрос в бюро кредитных историй";
         assertEquals(expected, actualText);
     }
 }
