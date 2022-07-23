@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -50,12 +49,23 @@ class CallbackTest {
     }
 
     @Test
-    void emptyFieldsTest() {
+    void emptyNameTest() {
         driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys(" ");
-        driver.findElement(By.cssSelector("[type='tel']")).sendKeys(" ");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79995577666");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("button")).click();
         String actualText = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub")).getText().trim();
+        String expected = "Поле обязательно для заполнения";
+        assertEquals(expected, actualText);
+    }
+
+    @Test
+    void emptyTelTest() {
+        driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Черных Мария");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys(" ");
+        driver.findElement(By.cssSelector(".checkbox__box")).click();
+        driver.findElement(By.cssSelector("button")).click();
+        String actualText = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub")).getText().trim();
         String expected = "Поле обязательно для заполнения";
         assertEquals(expected, actualText);
     }
